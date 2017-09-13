@@ -1,0 +1,15 @@
+{
+  "name": "slack-twitter",
+  "version": "1.0.0",
+  "description": "read only",
+  "main": "index.js",
+  "scripts": {
+    "test": "true"
+  },
+  "author": "cympfh",
+  "license": "MIT",
+  "dependencies": {
+    "request": "^2.81.0",
+    "twitter": "^1.7.1"
+  }
+}
