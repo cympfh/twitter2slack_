@@ -15,9 +15,14 @@ $ cat .config.json
         "consumer_secret": "J************************************BEGtg",
         "access_token_key": "************************************************FC",
         "access_token_secret": "t********************************************"
-    }
+    },
+    "blacks": []
 }
 ```
+
+Configure webhook url for Slack channel, consumer/token keys for Twitter.
+The `blacks` is a list of Twitter accounts (username). The users in blacks does not appeare in your Timeline.
+If you don't want to ignore anyone, set an empty list for `blacks`.
 
 ## dependencies
 

@@ -4,10 +4,6 @@ var twitter = require('twitter');
 var config = require('./.config.json');
 var client = new twitter(config.twitter);
 
-blacks = [
-    'dummy'
-];
-
 // to Slack channel
 function post(tweet, debug=false) {
 
@@ -45,7 +41,7 @@ function post(tweet, debug=false) {
 
 function is_black(name) {
     var a;
-    for (a of blacks) {
+    for (a of config.blacks) {
         if (a == name) return true;
     }
     return false;
