@@ -53,6 +53,7 @@ function is_black(name) {
 
 function main(debug=false) {
     client.stream('user', {}, (stream) => {
+        console.log('ready');
         stream.on('data', (tweet) => {
             username = tweet.user.screen_name;
             console.log(username, `black?=${is_black(username)}`);
