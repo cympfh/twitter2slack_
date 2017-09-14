@@ -5,38 +5,42 @@ var config = require('./.config.json');
 var client = new twitter(config.twitter);
 
 // to Slack channel
-function post(tweet, debug=false) {
-
-    username = tweet.user.screen_name
-    icon_url = tweet.user.profile_image_url
-    id = tweet.id_str
-    post_url = `https://twitter.com/${username}/status/${id}`
-
-    text = post_url
-    if (tweet.user.protected) {
-        text += "\n:key: " + tweet.text;
-    }
-
+function post(text, username, options) {
     headers = {
         "Content-type": "application/json"
     };
     data = {
         "username": username,
-        "icon_url": icon_url,
         "fallback": "Hi",
         "channel": "#timeline_twitter",
         "text": text
     }
+    for (var key in options) {
+        data[key] = options[key];
+    }
+    console.log('POST', data)
     options = {
         headers: headers,
         body: JSON.stringify(data)
     };
-    console.log('POST', options);
-    if (!debug) {
-        request.post(config.slack.webhookurl, options, (err, response) => {
-            console.log('Response:', response.body);
-        })
+    request.post(config.slack.webhookurl, options, (err, response) => {
+        console.log('Response:', response.body);
+    })
+}
+
+function log(msg) {
+    post(msg, 'info', {icon_emoji: ':information_source:'});
+}
+
+function twit(tweet) {
+    username = tweet.user.screen_name
+    icon_url = tweet.user.profile_image_url
+    id = tweet.id_str
+    text = `https://twitter.com/${username}/status/${id}`
+    if (tweet.user.protected) {
+        text += "\n:key: " + tweet.text;
     }
+    post(text, username, {icon_url: icon_url});
 }
 
 function is_black(name) {
@@ -47,16 +51,22 @@ function is_black(name) {
     return false;
 }
 
-function main(debug=false) {
+function main() {
     client.stream('user', {}, (stream) => {
-        console.log('ready');
+        console.log('Hello');
+        log('Hello');
         stream.on('data', (tweet) => {
             username = tweet.user.screen_name;
             console.log(username, `black?=${is_black(username)}`);
             if (is_black(username)) return;
             console.log(tweet);
-            post(tweet);
+            twit(tweet);
         })
+        stream.on('end', (tweet) => {
+            console.log('end (restarting after 1 sec)');
+            log('end (restarting after 1 sec)');
+            setTimeout(main, 1000);
+        });
     })
 }
 
