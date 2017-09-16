@@ -24,8 +24,9 @@ function post(text, username, options) {
         body: JSON.stringify(data)
     };
     request.post(config.slack.webhookurl, options, (err, response) => {
-        console.log('Response:', response.body);
-    })
+        if (err) { console.log('Err from Slack:', err); }
+        if (response) { console.log('Response:', response.body); }
+    });
 }
 
 function log(msg) {
