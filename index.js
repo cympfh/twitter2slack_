@@ -57,6 +57,7 @@ function main() {
         console.log('Hello');
         log('Hello');
         stream.on('data', (tweet) => {
+            if (!tweet || !tweet.user || !tweet.text) return;
             username = tweet.user.screen_name;
             console.log(username, `black?=${is_black(username)}`);
             if (is_black(username)) return;
