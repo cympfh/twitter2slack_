@@ -4,6 +4,10 @@ var twitter = require('twitter');
 var config = require('./.config.json');
 var client = new twitter(config.twitter);
 
+var mode = config.mode ? config.mode : 'black';
+var blacks = config.blacks ? config.blacks : [];
+var whites = config.whites ? config.whites : [];
+
 // to Slack channel
 function post(text, username, options) {
     headers = {
@@ -12,7 +16,7 @@ function post(text, username, options) {
     data = {
         "username": username,
         "fallback": "Hi",
-        "channel": "#timeline_twitter",
+        "channel": "#timeline",
         "text": text
     }
     for (var key in options) {
@@ -46,23 +50,38 @@ function twit(tweet) {
 
 function is_black(name) {
     var a;
-    for (a of config.blacks) {
-        if (a == name) return true;
-    }
+    for (a of blacks) { if (a == name) return true; }
+    return false;
+}
+
+function is_white(name) {
+    var a;
+    for (a of whites) { if (a == name) return true; }
     return false;
 }
 
 function main() {
     client.stream('user', {}, (stream) => {
         console.log('Hello');
-        log('Hello');
         stream.on('data', (tweet) => {
             if (!tweet || !tweet.user || !tweet.text) return;
             username = tweet.user.screen_name;
-            console.log(username, `black?=${is_black(username)}`);
-            if (is_black(username)) return;
-            console.log(tweet);
-            twit(tweet);
+            console.log(username);
+            if (mode == 'white') {
+                if (is_white(username)) {
+                    console.log(`OK: ${username} is white`)
+                    twit(tweet);
+                } else {
+                    console.log(`NG: ${username} is not white`)
+                }
+            } else {
+                if (is_black(username)) {
+                    console.log(`NG: ${username} is black`)
+                } else {
+                    console.log(`OK: ${username} is not black`)
+                    twit(tweet);
+                }
+            }
         })
         stream.on('end', (tweet) => {
             console.log('end (restarting after 1 sec)');
