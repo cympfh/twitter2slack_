@@ -60,10 +60,27 @@ function is_white(name) {
     return false;
 }
 
-function main() {
+(function () {
+
+    var suicide = (reason) => {
+        console.log(`Unexpected ${reason} happened. Good bye.`);
+        process.exit();
+    };
+
+    var last_time = (new Date()).getTime();
+
     client.stream('user', {}, (stream) => {
-        console.log('Hello');
+
+        setInterval(() => {
+            var now = (new Date()).getTime();
+            var dmin = (now - last_time) / 1000 / 60;
+            if (dmin > 10) suicide('timeout');
+        }, 60);
+
+        console.log('ready');
+
         stream.on('data', (tweet) => {
+            last_time = (new Date()).getTime();
             if (!tweet || !tweet.user || !tweet.text) return;
             username = tweet.user.screen_name;
             console.log(username);
@@ -83,12 +100,12 @@ function main() {
                 }
             }
         })
-        stream.on('end', (tweet) => {
-            console.log('end (restarting after 1 sec)');
-            log('end (restarting after 1 sec)');
-            setTimeout(main, 1000);
-        });
-    })
-}
 
-main()
+        stream.on('end', () => suicide('end'));
+        stream.on('disconnect', () => suicide('disconnect'));
+        stream.on('destroy', () => suicide('destroy'));
+        stream.on('close', () => suicide('close'));
+        stream.on('error', () => suicide('error'));
+    });
+
+}());
