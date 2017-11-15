@@ -2,10 +2,10 @@
 
 read only
 
-## config
+## config.json
 
 ```bash
-$ cat .config.json
+$ cat config.json
 {
     "slack": {
         "webhookurl": "https://hooks.slack.com/services/*********/*********/************************"

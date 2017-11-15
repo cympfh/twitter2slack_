@@ -1,7 +1,7 @@
 var request = require('request');
 var twitter = require('twitter');
 
-var config = require('./.config.json');
+var config = require('./config.json');
 var client = new twitter(config.twitter);
 
 var mode = config.mode ? config.mode : 'black';
