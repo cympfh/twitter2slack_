@@ -38,14 +38,18 @@ function log(msg) {
 }
 
 function twit(tweet) {
-    username = tweet.user.screen_name
-    icon_url = tweet.user.profile_image_url
-    id = tweet.id_str
-    text = `https://twitter.com/${username}/status/${id}`
+    const name = tweet.user.name;
+    const username = tweet.user.screen_name;
+    const icon_url = tweet.user.profile_image_url;
+    const id = tweet.id_str;
+
+    var text = `https://twitter.com/${username}/status/${id}`;
     if (tweet.user.protected) {
         text += "\n:key: " + tweet.text;
     }
-    post(text, username, {icon_url: icon_url});
+
+    var display_name = `${name} @${username}`;
+    post(text, display_name, {icon_url: icon_url});
 }
 
 function is_black(name) {
@@ -99,7 +103,7 @@ function is_white(name) {
                     twit(tweet);
                 }
             }
-        })
+        });
 
         stream.on('end', () => suicide('end'));
         stream.on('disconnect', () => suicide('disconnect'));
