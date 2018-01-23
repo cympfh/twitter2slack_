@@ -1,4 +1,4 @@
-var request = require('request');
+const fs = require('fs');
 var twitter = require('twitter');
 
 var config = require('./config.json');
@@ -8,48 +8,34 @@ var mode = config.mode ? config.mode : 'black';
 var blacks = config.blacks ? config.blacks : [];
 var whites = config.whites ? config.whites : [];
 
-// to Slack channel
-function post(text, username, options) {
-    headers = {
-        "Content-type": "application/json"
-    };
-    data = {
-        "username": username,
-        "fallback": "Hi",
-        "channel": "#timeline",
-        "text": text
-    }
-    for (var key in options) {
-        data[key] = options[key];
-    }
-    console.log('POST', data)
-    options = {
-        headers: headers,
-        body: JSON.stringify(data)
-    };
-    request.post(config.slack.webhookurl, options, (err, response) => {
-        if (err) { console.log('Err from Slack:', err); }
-        if (response) { console.log('Response:', response.body); }
-    });
-}
+const Slack = require('./core/slack');
+const slack = new Slack(config);
+
 
 function log(msg) {
-    post(msg, 'info', {icon_emoji: ':information_source:'});
+    slack.post(msg, 'info', {icon_emoji: ':information_source:'});
 }
 
 function twit(tweet) {
+
     const name = tweet.user.name;
     const username = tweet.user.screen_name;
+    const display_name = `${name} @${username}`;
+
     const icon_url = tweet.user.profile_image_url;
     const id = tweet.id_str;
 
-    var text = `https://twitter.com/${username}/status/${id}`;
-    if (tweet.user.protected) {
-        text += "\n:key: " + tweet.text;
+    const text = tweet.text;
+
+    var medias = [];
+
+    if (tweet.user.protected && tweet.entities && tweet.entities.media) {
+        for (var item of tweet.extended_entities.media) {
+            medias.push(item.media_url);
+        };
     }
 
-    var display_name = `${name} @${username}`;
-    post(text, display_name, {icon_url: icon_url});
+    slack.post(text, display_name, {icon_url: icon_url}, medias);
 }
 
 function is_black(name) {

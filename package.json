@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "request": "^2.81.0",
-    "twitter": "^1.7.1"
+    "twitter": "^1.7.1",
+    "node-slack-upload": "*"
   }
 }
