@@ -25,13 +25,14 @@ function twit(tweet) {
     if (!tweet.retweeted_status) { // when regular tweet (not RT)
 
         const text = tweet.text;
-        var medias = [];
+        slack.post(text, display_name, {icon_url: icon_url});
+
+        // uploading the protected media images
         if (tweet.user.protected && tweet.entities && tweet.entities.media) {
             for (var item of tweet.extended_entities.media) {
-                medias.push(item.media_url);
+                slack.upload_by_bot(item.media_url);
             };
         }
-        slack.post(text, display_name, {icon_url: icon_url}, medias);
 
     } else {  // when RT
 
@@ -44,14 +45,12 @@ function twit(tweet) {
 }
 
 function is_black(name) {
-    var a;
-    for (a of blacks) { if (a == name) return true; }
+    for (var a of blacks) { if (a == name) return true; }
     return false;
 }
 
 function is_white(name) {
-    var a;
-    for (a of whites) { if (a == name) return true; }
+    for (var a of whites) { if (a == name) return true; }
     return false;
 }
 
