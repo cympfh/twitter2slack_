@@ -11,6 +11,7 @@ var whites = config.whites ? config.whites : [];
 const Slack = require('./core/slack');
 const slack = new Slack(config);
 
+const Twitter = require('./core/twitter');
 
 function log(msg) {
     slack.post(msg, 'info', {icon_emoji: ':information_source:'});
@@ -18,24 +19,28 @@ function log(msg) {
 
 function twit(tweet) {
 
-    const name = tweet.user.name;
-    const username = tweet.user.screen_name;
-    const display_name = `${name} @${username}`;
-
+    const display_name = Twitter.getName(tweet);
     const icon_url = tweet.user.profile_image_url;
-    const id = tweet.id_str;
 
-    const text = tweet.text;
+    if (!tweet.retweeted_status) { // when regular tweet (not RT)
 
-    var medias = [];
+        const text = tweet.text;
+        var medias = [];
+        if (tweet.user.protected && tweet.entities && tweet.entities.media) {
+            for (var item of tweet.extended_entities.media) {
+                medias.push(item.media_url);
+            };
+        }
+        slack.post(text, display_name, {icon_url: icon_url}, medias);
 
-    if (tweet.user.protected && tweet.entities && tweet.entities.media) {
-        for (var item of tweet.extended_entities.media) {
-            medias.push(item.media_url);
-        };
+    } else {  // when RT
+
+        const text = `RT ${Twitter.getName(tweet.retweeted_status)}`;
+        slack.post(text, display_name, {icon_url: icon_url});
+        twit(tweet.retweeted_status);
+
     }
 
-    slack.post(text, display_name, {icon_url: icon_url}, medias);
 }
 
 function is_black(name) {
