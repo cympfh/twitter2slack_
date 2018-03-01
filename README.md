@@ -2,24 +2,27 @@
 
 read only
 
-## config.json
+## config.yml
 
 ```bash
-$ cat config.json
-{
-    "slack": {
-        "webhookurl": "https://hooks.slack.com/services/*********/*********/************************"
-    },
-    "twitter": {
-        "consumer_key": "******************1F*Q",
-        "consumer_secret": "J************************************BEGtg",
-        "access_token_key": "************************************************FC",
-        "access_token_secret": "t********************************************"
-    },
-    "blacks": [],
-    "whites": [],
-    "mode": "white"
-}
+$ cat config.yml
+
+slack:
+  webhookurl: https://hooks.slack.com/services/222222222/888888888/tttttttttttttttttttttttt
+  token: xoxb-000000000000-000000000000000000000000
+  channelId: CDDDDDDDZ
+
+twitter:
+  username: cympfh
+  consumer_key: QQQQQQQQQQQQQQQQQQQQQQ
+  consumer_secret: JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ
+  access_token_key: 1900000000-ooooooooooooooooooooooooooooooooooooooo
+  access_token_secret: OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+
+mode: black
+whites: []
+blacks:
+  - ampeloss
 ```
 
 Configure webhook url for Slack channel, consumer/token keys for Twitter.

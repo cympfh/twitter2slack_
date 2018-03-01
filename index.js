@@ -1,7 +1,8 @@
 const fs = require('fs');
-var twitter = require('twitter');
+const YAML = require('yamljs');
+const twitter = require('twitter');
 
-var config = require('./config.json');
+const config = YAML.load('./config.yml');
 var client = new twitter(config.twitter);
 
 var mode = config.mode ? config.mode : 'black';

@@ -9,8 +9,9 @@
   "author": "cympfh",
   "license": "MIT",
   "dependencies": {
+    "node-slack-upload": "*",
     "request": "^2.81.0",
     "twitter": "^1.7.1",
-    "node-slack-upload": "*"
+    "yamljs": "^0.3.0"
   }
 }
