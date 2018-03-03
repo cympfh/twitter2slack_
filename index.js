@@ -45,6 +45,23 @@ function twit(tweet) {
 
 }
 
+var _muted = [];
+function is_muted(screen_name) {
+    return _muted.indexOf(screen_name) >= 0;
+};
+
+function update_mute_list() {
+    client.get('mutes/users/list.json?include_entities=false&skip_status=true', {}, (err, data) => {
+        for (var i in data.users) { _muted[i] = data.users[i].screen_name; }
+        console.log(`Mute: ${_muted}`);
+    });
+}
+
+if (config.mute) {
+  update_mute_list();
+  setInterval(update_mute_list, 30 * 60 * 1000);
+}
+
 function is_black(name) {
     for (var a of blacks) { if (a == name) return true; }
     return false;
@@ -79,7 +96,9 @@ function is_white(name) {
             if (!tweet || !tweet.user || !tweet.text) return;
             username = tweet.user.screen_name;
             console.log(username);
-            if (mode == 'white') {
+            if (is_muted(username)) {
+                console.log(`Mute User: ${username}`);
+            } else if (mode == 'white') {
                 if (is_white(username)) {
                     console.log(`OK: ${username} is white`)
                     twit(tweet);

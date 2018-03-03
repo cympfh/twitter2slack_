@@ -23,6 +23,8 @@ mode: black
 whites: []
 blacks:
   - ampeloss
+
+mute: true
 ```
 
 Configure webhook url for Slack channel, consumer/token keys for Twitter.
@@ -32,14 +34,17 @@ Configure webhook url for Slack channel, consumer/token keys for Twitter.
 The 3 fields `mode`, `blacks` and `whites` are optional.
 
 The `mode` can be `black` or `white`.
-By default, `mode=black`.
+By default, `mode: black`.
 
-When `mode=black`, it works as black list mode.
-All tweets from `blacks` are muted.
-The `blacks` is a list of user-screen-names (e.g. `hogehoge` for the user `@hogehoge`).
-If the `blacks` field is omitted in the config, it be an empty.
+And `whites` and `blacks` is a list of user-screen-names (e.g. `hogehoge` for the user `@hogehoge`)..
 
-When `mode=white`, Only tweets from `whites` are displayed.
+When `mode: black`, it works as black-list mode, and all tweets from `blacks` are muted.
+When `mode: white`, it is white-list mode, and only tweets from `whites` are displayed.
+
+### Mute (optional)
+
+Twitter official mute function works, by `mute: true`.
+By default, `mute: false`.
 
 ## dependencies
 
