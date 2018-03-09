@@ -3,7 +3,7 @@ var request = require('request');
 
 function Slack(config) {
 
-    function post(text, username, options) {
+    function post(text, username, options, cont) {
         const headers = { "Content-type": "application/json" };
         var data = {
             "username": username,
@@ -25,6 +25,7 @@ function Slack(config) {
                 return;
             }
             if (response) { console.log('Response:', response.body); }
+            if (cont) cont();
         });
     }
 

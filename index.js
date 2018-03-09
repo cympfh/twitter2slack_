@@ -38,8 +38,9 @@ function twit(tweet) {
     } else {  // when RT
 
         const text = `RT ${Twitter.getName(tweet.retweeted_status)}`;
-        slack.post(text, display_name, {icon_url: icon_url});
-        twit(tweet.retweeted_status);
+        slack.post(text, display_name, {icon_url: icon_url}, () => {
+            twit(tweet.retweeted_status);
+        });
 
     }
 
