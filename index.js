@@ -18,7 +18,7 @@ function log(msg) {
     slack.post(msg, 'info', {icon_emoji: ':information_source:'});
 }
 
-function twit(tweet) {
+function post(tweet) {
 
     const display_name = Twitter.getName(tweet);
     const icon_url = tweet.user.profile_image_url;
@@ -37,13 +37,20 @@ function twit(tweet) {
 
     } else {  // when RT
 
-        const text = `RT ${Twitter.getName(tweet.retweeted_status)}`;
+        const text = `:arrows_counterclockwise: ${Twitter.getName(tweet.retweeted_status)}`;
         slack.post(text, display_name, {icon_url: icon_url}, () => {
-            twit(tweet.retweeted_status);
+            post(tweet.retweeted_status);
         });
 
     }
 
+}
+
+function post_fav(source, target_object) {
+    const display_name = source.name;
+    const icon_url = source.profile_image_url;
+    const text = `:star: ${target_object.text}`;
+    slack.post(text, display_name, {icon_url: icon_url});
 }
 
 var _muted = [];
@@ -73,6 +80,29 @@ function is_white(name) {
     return false;
 }
 
+function is_ok(username) {
+    if (is_muted(username)) {
+        console.log(`Mute User: ${username}`);
+        return false;
+    } else if (mode == 'white') {
+        if (is_white(username)) {
+            console.log(`OK: ${username} is white`)
+            return true;
+        } else {
+            console.log(`NG: ${username} is not white`)
+            return false;
+        }
+    } else {
+        if (is_black(username)) {
+            console.log(`NG: ${username} is black`)
+            return false;
+        } else {
+            console.log(`OK: ${username} is not black`)
+            return true;
+        }
+    }
+}
+
 (function () {
 
     var suicide = (reason) => {
@@ -95,23 +125,16 @@ function is_white(name) {
         stream.on('data', (tweet) => {
             last_time = (new Date()).getTime();
             if (!tweet || !tweet.user || !tweet.text) return;
-            username = tweet.user.screen_name;
-            console.log(username);
-            if (is_muted(username)) {
-                console.log(`Mute User: ${username}`);
-            } else if (mode == 'white') {
-                if (is_white(username)) {
-                    console.log(`OK: ${username} is white`)
-                    twit(tweet);
-                } else {
-                    console.log(`NG: ${username} is not white`)
-                }
-            } else {
-                if (is_black(username)) {
-                    console.log(`NG: ${username} is black`)
-                } else {
-                    console.log(`OK: ${username} is not black`)
-                    twit(tweet);
+            if (is_ok(tweet.user.screen_name)) {
+                post(tweet);
+            }
+        });
+
+        stream.on('event', (event) => {
+            last_time = (new Date()).getTime();
+            if (event.event == 'favorite' && event.target_object.user.screen_name == config.twitter.username) {
+                if (is_ok(event.source.screen_name)) {
+                    post_fav(event.source, event.target_object);
                 }
             }
         });
