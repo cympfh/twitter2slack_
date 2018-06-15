@@ -132,7 +132,7 @@ function is_ok(username) {
 
         stream.on('event', (event) => {
             last_time = (new Date()).getTime();
-            if (event.event == 'favorite' && event.target_object.user.screen_name == config.twitter.username) {
+            if (event.event == 'favorite') {
                 if (is_ok(event.source.screen_name)) {
                     post_fav(event.source, event.target_object);
                 }
