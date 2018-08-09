@@ -80,25 +80,33 @@ function is_white(name) {
     return false;
 }
 
-function is_ok(username) {
+function is_ok(username, text) {
     if (is_muted(username)) {
         console.log(`Mute User: ${username}`);
         return false;
-    } else if (mode == 'white') {
-        if (is_white(username)) {
-            console.log(`OK: ${username} is white`)
-            return true;
-        } else {
-            console.log(`NG: ${username} is not white`)
-            return false;
-        }
     } else {
-        if (is_black(username)) {
-            console.log(`NG: ${username} is black`)
-            return false;
+        for (var ngword of config.ng_words) {
+            if (text.indexOf(ngword) >= 0) {
+                console.log(`NG Word Found: ${ngword}`);
+                return false;
+            }
+        }
+        if (mode == 'white') {
+            if (is_white(username)) {
+                console.log(`OK: ${username} is white`)
+                return true;
+            } else {
+                console.log(`NG: ${username} is not white`)
+                return false;
+            }
         } else {
-            console.log(`OK: ${username} is not black`)
-            return true;
+            if (is_black(username)) {
+                console.log(`NG: ${username} is black`)
+                return false;
+            } else {
+                console.log(`OK: ${username} is not black`)
+                return true;
+            }
         }
     }
 }
@@ -125,7 +133,7 @@ function is_ok(username) {
         stream.on('data', (tweet) => {
             last_time = (new Date()).getTime();
             if (!tweet || !tweet.user || !tweet.text) return;
-            if (is_ok(tweet.user.screen_name)) {
+            if (is_ok(tweet.user.screen_name, tweet.text)) {
                 post(tweet);
             }
         });
@@ -133,7 +141,7 @@ function is_ok(username) {
         stream.on('event', (event) => {
             last_time = (new Date()).getTime();
             if (event.event == 'favorite') {
-                if (is_ok(event.source.screen_name)) {
+                if (is_ok(event.source.screen_name, '')) {
                     post_fav(event.source, event.target_object);
                 }
             }
