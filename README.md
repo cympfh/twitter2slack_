@@ -1,3 +1,7 @@
+# Warning!
+
+This doesn't work because Twitter stops stream API.
+
 # Read Twitter Timeline from Slack
 
 read only
